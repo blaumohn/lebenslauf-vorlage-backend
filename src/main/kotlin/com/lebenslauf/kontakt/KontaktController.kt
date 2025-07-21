@@ -1,32 +1,58 @@
 package com.lebenslauf.kontakt
 
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.mvc.support.RedirectAttributes
 
-@RestController
-@RequestMapping("/api/kontakt")
-class KontaktController {
+@Controller
+@RequestMapping("/kontakt")
+class KontaktController(
+    private val captchaService: CaptchaTokenService,
+) {
+
+    @GetMapping
+    fun formularAnzeigen(model: Model): String {
+        val captcha = captchaService.neuesCaptcha()
+        model.addAttribute("kontakt", KontaktAnfrageDto())
+        model.addAttribute("captchaToken", captcha.tokenFeld)
+        model.addAttribute("captchaImage", captcha.bildAlsBase64())
+        return "kontakt"
+    }
+
     @PostMapping
-    fun kontaktAbsenden(
-        @RequestBody anfrage: KontaktAnfrageDto,
-    ): ResponseEntity<String> {
-        if (anfrage.botcheck != "42") {
-            println("❌ Botcheck fehlgeschlagen für ${anfrage.email}")
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Botcheck fehlgeschlagen")
+    fun formularAbsenden(
+        @ModelAttribute kontakt: KontaktAnfrageDto,
+        model: Model,
+        redirectAttributes: RedirectAttributes,
+    ): String {
+        val gueltig = captchaService.pruefeToken(
+            kontakt.captchaToken,
+            kontakt.captchaAntwort,
+        )
+        if (!gueltig) {
+            val neuesCaptcha = captchaService.neuesCaptcha()
+            model.addAttribute(
+                "fehler",
+                "Captcha ungültig. Bitte erneut versuchen.",
+            )
+            model.addAttribute("kontakt", kontakt)
+            model.addAttribute("captchaToken", neuesCaptcha.tokenFeld)
+            model.addAttribute("captchaImage", neuesCaptcha.bildAlsBase64())
+            return "kontakt"
         }
 
         println(
-            "✅ Neue Nachricht erhalten von ${anfrage.name} <${anfrage.email}>",
+            "\u2709 Neue Nachricht erhalten: ${kontakt.nachricht} " +
+                "von ${kontakt.name} <${kontakt.email}>",
         )
-        println("📝 Nachricht: ${anfrage.nachricht}")
-
-        // Später: Email senden oder speichern
-
-        return ResponseEntity.ok("Nachricht empfangen")
+        redirectAttributes.addFlashAttribute(
+            "erfolg",
+            "Nachricht erfolgreich versendet!",
+        )
+        return "redirect:/kontakt"
     }
 }

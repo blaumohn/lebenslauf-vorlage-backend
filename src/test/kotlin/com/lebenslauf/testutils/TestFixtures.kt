@@ -12,6 +12,5 @@ object TestFixtures {
         name = name,
         email = email,
         nachricht = nachricht,
-        botcheck = botcheck,
     )
 }

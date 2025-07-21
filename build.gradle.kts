@@ -25,11 +25,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.jsoup:jsoup:1.17.1")
     implementation("com.github.penggle:kaptcha:2.3.2")
 
     testImplementation("org.assertj:assertj-core:3.24.2")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+    exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+}
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 
 }
@@ -46,6 +49,7 @@ tasks.withType<JavaCompile> {
 
 tasks.test {
     useJUnitPlatform()
+    reports.html.required.set(true)
 }
 
 val activeProfile = project.findProperty("profile") as String? ?: "local"

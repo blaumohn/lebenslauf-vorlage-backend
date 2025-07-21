@@ -1,8 +1,9 @@
 package com.lebenslauf.kontakt
 
 data class KontaktAnfrageDto(
-    val name: String,
-    val email: String,
-    val nachricht: String,
-    val botcheck: String,
+    var name: String = "",
+    var email: String = "",
+    var nachricht: String = "",
+    var captchaAntwort: String = "",
+    var captchaToken: String = "",
 )
