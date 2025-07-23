@@ -18,8 +18,8 @@ class KontaktController(
     fun formularAnzeigen(model: Model): String {
         val captcha = captchaService.neuesCaptcha()
         model.addAttribute("kontakt", KontaktAnfrageDto())
-        model.addAttribute("captchaToken", captcha.tokenFeld)
-        model.addAttribute("captchaImage", captcha.bildAlsBase64())
+        model.addAttribute("captchaToken", captcha.token)
+        model.addAttribute("captchaImage", captcha.bildBase64)
         return "kontakt"
     }
 
@@ -29,19 +29,19 @@ class KontaktController(
         model: Model,
         redirectAttributes: RedirectAttributes,
     ): String {
-        val gueltig = captchaService.pruefeToken(
+        val ergebnis = captchaService.pruefeToken(
             kontakt.captchaToken,
             kontakt.captchaAntwort,
         )
-        if (!gueltig) {
+        if (ergebnis != CaptchaPruefungErgebnis.Gueltig) {
             val neuesCaptcha = captchaService.neuesCaptcha()
             model.addAttribute(
                 "fehler",
                 "Captcha ungültig. Bitte erneut versuchen.",
             )
             model.addAttribute("kontakt", kontakt)
-            model.addAttribute("captchaToken", neuesCaptcha.tokenFeld)
-            model.addAttribute("captchaImage", neuesCaptcha.bildAlsBase64())
+            model.addAttribute("captchaToken", neuesCaptcha.token)
+            model.addAttribute("captchaImage", neuesCaptcha.bildBase64)
             return "kontakt"
         }
 

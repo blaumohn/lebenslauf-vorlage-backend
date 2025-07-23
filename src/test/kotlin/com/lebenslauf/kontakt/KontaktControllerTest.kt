@@ -1,6 +1,6 @@
 package com.lebenslauf.kontakt
 
-import com.lebenslauf.testutils.TestCaptchas
+import com.lebenslauf.kontakt.CaptchaTokenService.CaptchaPacket
 import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -23,10 +23,11 @@ class KontaktControllerTest {
 
     @Test
     fun `GET kontakt zeigt formular mit captcha`() {
-        val mockCaptcha = CaptchaTokenService.CaptchaPaket(
-            bild = TestCaptchas.platzhalterBild(),
-            tokenFeld = "TEST123|123456789|SIGNATUR",
-        )
+        val mockCaptcha =
+            CaptchaPacket(
+                "TEST|1234567890|SIG",
+                "data:image/png;base64;TESTBILD",
+            )
         given(captchaService.neuesCaptcha()).willReturn(mockCaptcha)
 
         mockMvc.get("/kontakt")
@@ -40,7 +41,7 @@ class KontaktControllerTest {
     @Test
     fun `POST kontakt mit ungueltigem captcha zeigt fehlermeldung`() {
         given(captchaService.pruefeToken("FAKE|1|SIG", "falsch"))
-            .willReturn(false)
+            .willReturn(CaptchaPruefungErgebnis.Ungueltig)
 
         val form = mapOf(
             "name" to "Max Mustermann",
@@ -50,9 +51,9 @@ class KontaktControllerTest {
             "captchaToken" to "FAKE|1|SIG",
         )
 
-        val neuerCaptcha = CaptchaTokenService.CaptchaPaket(
-            bild = TestCaptchas.platzhalterBild(),
-            tokenFeld = "NEU|2|SIGNEU",
+        val neuerCaptcha = CaptchaPacket(
+            "NEU|1234567890|SIGNEU",
+            "data:image/png;base64;TESTBILD1",
         )
         given(captchaService.neuesCaptcha()).willReturn(neuerCaptcha)
 

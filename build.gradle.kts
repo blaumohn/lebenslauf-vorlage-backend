@@ -34,6 +34,7 @@ dependencies {
     exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 }
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
 }
 

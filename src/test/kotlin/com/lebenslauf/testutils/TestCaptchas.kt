@@ -1,5 +1,6 @@
 package com.lebenslauf.testutils
 
+import com.google.code.kaptcha.impl.DefaultKaptcha
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
@@ -14,5 +15,15 @@ object TestCaptchas {
         g.drawString("TEST CAPTCHA", 40, 40)
         g.dispose()
         return img
+    }
+}
+
+class TestKaptcha : DefaultKaptcha() {
+    var letzterText: String? = null
+
+    override fun createText(): String {
+        val text = super.createText()
+        letzterText = text
+        return text
     }
 }
