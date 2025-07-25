@@ -36,6 +36,12 @@ out/
 /nbdist/
 /.nb-gradle/
 
+### H2 ###
+/data/*.mv.db
+/data/*.trace.db
+/data/*.h2.db
+/data/*.lock.db
+
 ### VS Code ###
 .vscode/
 

@@ -3,6 +3,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
+    kotlin("plugin.jpa") version "1.9.25"
     id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.diffplug.spotless") version "6.25.0"
@@ -29,6 +30,11 @@ dependencies {
     implementation("org.jsoup:jsoup:1.17.1")
     implementation("com.github.penggle:kaptcha:2.3.2")
 
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    runtimeOnly("com.h2database:h2")
+
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
     exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
@@ -51,12 +57,6 @@ tasks.withType<JavaCompile> {
 tasks.test {
     useJUnitPlatform()
     reports.html.required.set(true)
-}
-
-val activeProfile = project.findProperty("profile") as String? ?: "local"
-
-tasks.named<BootRun>("bootRun") {
-    args("--spring.profiles.active=$activeProfile")
 }
 
 spotless {
