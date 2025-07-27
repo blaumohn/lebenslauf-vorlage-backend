@@ -11,8 +11,11 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import com.lebenslauf.testutils.config.TestAuditingConfig  
+import org.springframework.context.annotation.Import
 
 @WebMvcTest(KontaktController::class)
+@Import(TestAuditingConfig::class)
 class KontaktControllerTest {
 
     @Autowired
