@@ -29,6 +29,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.jsoup:jsoup:1.17.1")
     implementation("com.github.penggle:kaptcha:2.3.2")
+    implementation("org.flywaydb:flyway-core")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
