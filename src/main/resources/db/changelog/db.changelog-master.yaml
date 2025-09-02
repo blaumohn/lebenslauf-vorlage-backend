@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include: { file: db/changelog/001_captcha_sitzung.sql }
+  - include: { file: db/changelog/002_indizes.sql }
+  - include: { file: db/changelog/003_seed_dev.sql }

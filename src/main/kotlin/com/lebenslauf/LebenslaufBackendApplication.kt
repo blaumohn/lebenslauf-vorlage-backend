@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class LebenslaufBackendApplication
 
 fun main(args: Array<String>) {
-    runApplication<LebenslaufBackendApplication>(*args)
+  runApplication<LebenslaufBackendApplication>(*args)
 }

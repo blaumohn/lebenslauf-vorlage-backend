@@ -6,9 +6,6 @@ import org.springframework.context.annotation.Bean
 
 @TestConfiguration
 class TestTokenServiceConfig {
-
-    @Bean
-    fun tokenService(): TokenService {
-        return TokenService()
-    }
+  @Bean
+  fun tokenService(): TokenService = TokenService()
 }

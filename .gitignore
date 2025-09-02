@@ -55,3 +55,6 @@ Thumbs.db
 # --- Logs / Temp ---
 *.log
 *.tmp
+
+.env.properties
+kls_database.db

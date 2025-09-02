@@ -7,12 +7,13 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class LebenslaufController(private val tokenService: TokenService) {
-    @GetMapping("/api/lebenslauf")
-    fun getLebenslauf(@RequestParam(required = false) token: String?): String {
-        return if (tokenService.isValid(token)) {
-            "vollständig"
-        } else {
-            "öffentlich"
-        }
+  @GetMapping("/api/lebenslauf")
+  fun getLebenslauf(
+    @RequestParam(required = false) token: String?,
+  ): String =
+    if (tokenService.isValid(token)) {
+      "vollständig"
+    } else {
+      "öffentlich"
     }
 }

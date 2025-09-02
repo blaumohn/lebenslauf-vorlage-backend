@@ -8,9 +8,9 @@ import org.springframework.transaction.support.TransactionTemplate
 
 @TestConfiguration
 class TxConfigRequiresNew {
-    @Bean
-    fun txTemplateRequiresNew(txManager: PlatformTransactionManager) =
-        TransactionTemplate(txManager).apply {
-            propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRES_NEW
-        }
+  @Bean
+  fun txTemplateRequiresNew(txManager: PlatformTransactionManager) =
+    TransactionTemplate(txManager).apply {
+      propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRES_NEW
+    }
 }
