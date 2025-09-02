@@ -7,6 +7,7 @@ import com.lebenslauf.kontakt.model.CaptchaSitzung
 import com.lebenslauf.kontakt.testsupport.CaptchaSitzungTestBeans
 import jakarta.persistence.EntityManager
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Assertions.within
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -16,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.transaction.TestTransaction
 import org.springframework.transaction.support.TransactionSynchronizationManager
@@ -49,19 +51,12 @@ class CaptchaSitzungRepositoryTest {
   }
 
   @Test
-  fun `gespeicherte Sitzung ist lesbar und korrekt`() {
-    val sessionEingabe =
-      CaptchaSitzung(
-        captchaText = "TEST123",
+  fun `Repository übernimmt DB-Constraint für requestCount`() {
+    assertThatThrownBy {
+      repository.saveAndFlush(
+        CaptchaSitzung(captchaText = "X", requestCount = -1),
       )
-
-    val session = repository.saveAndFlush(sessionEingabe)
-    val id = session.id.evalT()
-
-    val geladen = repository.findById(id).orElse(null)
-    assertThat(geladen).isNotNull
-    assertThat(geladen?.captchaText).isEqualTo("TEST123")
-    assertThat(geladen?.archiviert).isFalse()
+    }.isInstanceOf(DataIntegrityViolationException::class.java)
   }
 
   @DisplayName(

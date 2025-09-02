@@ -99,12 +99,11 @@ class CaptchaSitzungSchemaTest {
 
   @Test
   fun `NOT NULL auf captcha_text wird erzwungen`() {
+    val sqlAnfrage =
+      "insert into public.captcha_sitzung (captcha_text) values (null)"
     org.junit.jupiter.api
       .assertThrows<jakarta.persistence.PersistenceException> {
-        entityManager
-          .createNativeQuery(
-            "insert into public.captcha_sitzung (captcha_text) values (null)",
-          ).executeUpdate()
+        entityManager.createNativeQuery(sqlAnfrage).executeUpdate()
         entityManager.flush()
       }
   }
@@ -114,15 +113,21 @@ class CaptchaSitzungSchemaTest {
   @Test
   fun `Spaltentypen und DEFAULT-Ausdruecke wie definiert`() {
     @Suppress("UNCHECKED_CAST")
+    val sqlAnfrage =
+      """
+      select
+        column_name,
+        data_type,
+        udt_name,
+        is_nullable,
+        coalesce(column_default, '')
+      from information_schema.columns
+      where table_schema='public' and table_name='captcha_sitzung'
+      """.trimIndent()
     val rows =
       entityManager
-        .createNativeQuery(
-          """
-          select column_name, data_type, udt_name, is_nullable, coalesce(column_default, '')
-          from information_schema.columns
-          where table_schema='public' and table_name='captcha_sitzung'
-          """.trimIndent(),
-        ).resultList as List<Array<Any?>>
+        .createNativeQuery(sqlAnfrage)
+        .resultList as List<Array<Any?>>
 
     fun row(n: String) = rows.first { (it[0] as String) == n }
 
@@ -140,11 +145,12 @@ class CaptchaSitzungSchemaTest {
 
   @Test
   fun `Extension pgcrypto ist installiert`() {
+    val sqlAnfrage =
+      "select 1 from pg_extension where extname='pgcrypto'"
     val ok =
       entityManager
-        .createNativeQuery(
-          "select 1 from pg_extension where extname='pgcrypto'",
-        ).resultList
+        .createNativeQuery(sqlAnfrage)
+        .resultList
         .isNotEmpty()
     assertThat(ok).isTrue()
   }
@@ -173,16 +179,12 @@ class CaptchaSitzungSchemaTest {
   @DisplayName("Index auf archiviert wird genutzt (Index Scan)")
   fun indexAufArchiviertWirdGenutzt() {
     for (i in 1..80) {
-      repository.save(
+      val eintrag =
         CaptchaSitzung(
           captchaText = "X$i",
-          archiviert = (
-            i %
-              2 ==
-              0
-          ),
-        ),
-      )
+          archiviert = (i % 2 == 0),
+        )
+      repository.save(eintrag)
     }
     repository.flush()
 
@@ -196,7 +198,8 @@ class CaptchaSitzungSchemaTest {
 
   @Test
   @DisplayName(
-    "Partial-Index idx_captcha_sitzung_offen greift bei archiviert=false und status='NEU'",
+    "Partial-Index idx_captcha_sitzung_offen greift bei " +
+      "archiviert=false und status='NEU'",
   )
   fun partialIndexWirdGenutzt() {
     for (i in 1..120) {
