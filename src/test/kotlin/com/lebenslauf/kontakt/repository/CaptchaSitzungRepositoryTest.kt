@@ -102,8 +102,8 @@ class CaptchaSitzungRepositoryTest {
 
     val dbInstant = Instant.ofEpochMilli(epochMillis)
 
-    assertThat(eintrag.datum).isNotNull
-    assertThat(eintrag.datum!!.toInstant())
+    assertThat(eintrag.erstelltAm).isNotNull
+    assertThat(eintrag.erstelltAm!!.toInstant())
       .isCloseTo(
         dbInstant,
         within(200, ChronoUnit.MILLIS),
@@ -125,15 +125,15 @@ class CaptchaSitzungRepositoryTest {
         transactionHelfer.saveAndFlush(
           CaptchaSitzung(captchaText = "NEW"),
         )
-      if (neu.datum.evalT().isAfter(alt.datum)) break@loop
+      if (neu.erstelltAm.evalT().isAfter(alt.erstelltAm)) break@loop
     }
-    require(neu.datum.evalT().isAfter(alt.datum)) {
+    require(neu.erstelltAm.evalT().isAfter(alt.erstelltAm)) {
       "Konnte keinen neueren Timestamp erzeugen – Testumgebung problematisch?"
     }
 
-    val grenze = alt.datum.evalT().plus(1, ChronoUnit.MILLIS)
+    val grenze = alt.erstelltAm.evalT().plus(1, ChronoUnit.MILLIS)
     val gelöscht =
-      repository.deleteAllByDatumBeforeAndArchiviertFalse(
+      repository.deleteAllByErstelltAmBeforeAndArchiviertFalse(
         grenze,
       )
     assertThat(gelöscht).isEqualTo(1)
@@ -146,14 +146,14 @@ class CaptchaSitzungRepositoryTest {
     entityManager.flush()
 
     val id = s1.id.evalT()
-    val vorher = s1.datum.evalT()
+    val vorher = s1.erstelltAm.evalT()
 
-    val ver = s1.copy(datum = vorher.plusDays(2)) // detached Kopie
+    val ver = s1.copy(erstelltAm = vorher.plusDays(2)) // detached Kopie
     val managed = entityManager.merge(ver)
     entityManager.flush()
 
     entityManager.clear()
     val neu = entityManager.find(CaptchaSitzung::class.java, id)
-    assertThat(neu.datum).isEqualTo(vorher)
+    assertThat(neu.erstelltAm).isEqualTo(vorher)
   }
 }

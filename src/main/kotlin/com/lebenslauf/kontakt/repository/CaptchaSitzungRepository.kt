@@ -8,7 +8,7 @@ import java.util.UUID
 interface CaptchaSitzungRepository : JpaRepository<CaptchaSitzung, UUID> {
   fun findByIdAndArchiviertFalse(id: UUID): CaptchaSitzung?
 
-  fun deleteAllByDatumBeforeAndArchiviertFalse(
+  fun deleteAllByErstelltAmBeforeAndArchiviertFalse(
     grenze: OffsetDateTime,
   ): Long
 }

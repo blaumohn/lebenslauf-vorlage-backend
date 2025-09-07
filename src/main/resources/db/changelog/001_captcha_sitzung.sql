@@ -8,7 +8,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE TABLE public.captcha_sitzung (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   captcha_text varchar(255) NOT NULL,
-  datum timestamptz NOT NULL DEFAULT now(),
+  erstellt_am timestamptz NOT NULL DEFAULT now(),
   archiviert boolean NOT NULL DEFAULT false,
   ip_address inet,
   user_agent text,

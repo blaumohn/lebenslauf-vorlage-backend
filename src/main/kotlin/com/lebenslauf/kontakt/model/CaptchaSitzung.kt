@@ -33,13 +33,13 @@ data class CaptchaSitzung(
   ) val captchaText: String,
 
   @Column(
-    name = "datum",
+    name = "erstellt_am",
     columnDefinition = "timestamptz",
     insertable = false,
     updatable = false,
   )
   @Generated(event = [EventType.INSERT])
-  val datum: OffsetDateTime? = null,
+  val erstelltAm: OffsetDateTime? = null,
 
   @Column(
     name = "archiviert",

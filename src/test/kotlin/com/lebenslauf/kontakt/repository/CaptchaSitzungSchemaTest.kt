@@ -78,7 +78,7 @@ class CaptchaSitzungSchemaTest {
     assertThat(r.archiviert).isFalse() // DEFAULT false
     assertThat(r.status).isEqualTo("NEU") // DEFAULT 'NEU'
     assertThat(r.requestCount).isEqualTo(0) // DEFAULT 0
-    assertThat(r.datum).isNotNull // DEFAULT now()
+    assertThat(r.erstelltAm).isNotNull // DEFAULT now()
   }
 
   @Test
@@ -133,14 +133,14 @@ class CaptchaSitzungSchemaTest {
 
     assertThat(row("id")[2]).isEqualTo("uuid")
     assertThat(row("captcha_text")[1]).isEqualTo("character varying")
-    assertThat(row("datum")[2]).isEqualTo("timestamptz")
+    assertThat(row("erstellt_am")[2]).isEqualTo("timestamptz")
     assertThat(row("archiviert")[1]).isEqualTo("boolean")
     assertThat(row("ip_address")[2]).isEqualTo("inet")
     assertThat(row("status")[1]).isEqualTo("character varying")
     assertThat(row("request_count")[1]).isEqualTo("integer")
 
     assertThat(row("id")[4] as String).contains("gen_random_uuid()")
-    assertThat(row("datum")[4] as String).contains("now()")
+    assertThat(row("erstellt_am")[4] as String).contains("now()")
   }
 
   @Test
