@@ -19,11 +19,4 @@ class Codierung(
     val hash = mac.doFinal(text.toByteArray())
     return Base64.getUrlEncoder().withoutPadding().encodeToString(hash)
   }
-
-  fun bildAlsBase64(bild: BufferedImage): String {
-    val out = ByteArrayOutputStream()
-    ImageIO.write(bild, "png", out)
-    val base64 = Base64.getEncoder().encodeToString(out.toByteArray())
-    return "data:image/png;base64,$base64"
-  }
 }

@@ -10,15 +10,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes
 
 @Controller
 @RequestMapping("/kontakt")
-class KontaktController(private val captchaService: CaptchaTokenService) {
+class KontaktController(private val captchaService: CaptchaService) {
   @GetMapping
-  fun formularAnzeigen(model: Model): String {
-    val captcha = captchaService.neuesCaptcha()
-    model.addAttribute("kontakt", KontaktAnfrageDto())
-    model.addAttribute("captchaToken", captcha.token)
-    model.addAttribute("captchaImage", captcha.bildBase64)
-    return "kontakt"
-  }
+  fun formularAnzeigen(model: Model): String = neuesFormular(
+    model, KontaktAnfrageDto()
+  )
 
   @PostMapping
   fun formularAbsenden(
@@ -27,20 +23,16 @@ class KontaktController(private val captchaService: CaptchaTokenService) {
     redirectAttributes: RedirectAttributes,
   ): String {
     val ergebnis =
-      captchaService.pruefeToken(
-        kontakt.captchaToken,
-        kontakt.captchaAntwort,
+      captchaService.pruefeCaptcha(
+        id = kontakt.captchaId,
+        antwort = kontakt.captchaAntwort,
       )
     if (ergebnis != CaptchaPruefungErgebnis.Gueltig) {
-      val neuesCaptcha = captchaService.neuesCaptcha()
-      model.addAttribute(
-        "fehler",
-        "Captcha ungültig. Bitte erneut versuchen.",
+      return neuesFormular(
+        model,
+        kontakt,
+        fehler = "Captcha ungültig. Bitte erneut versuchen."
       )
-      model.addAttribute("kontakt", kontakt)
-      model.addAttribute("captchaToken", neuesCaptcha.token)
-      model.addAttribute("captchaImage", neuesCaptcha.bildBase64)
-      return "kontakt"
     }
 
     println(
@@ -52,5 +44,16 @@ class KontaktController(private val captchaService: CaptchaTokenService) {
       "Nachricht erfolgreich versendet!",
     )
     return "redirect:/kontakt"
+  }
+
+  private fun neuesFormular(
+    model: Model, kontakt: KontaktAnfrageDto, fehler: String? = null,
+  ): String {
+    val captchaRaetsel = captchaService.neuesCaptcha()
+    model.addAttribute("kontakt", KontaktAnfrageDto())
+    model.addAttribute("captchaId", captchaRaetsel.id.toString())
+    model.addAttribute("captchaImage", captchaRaetsel.bildDataUrl)
+    fehler?.let { model.addAttribute("fehler", it) }
+    return "kontakt"
   }
 }

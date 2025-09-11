@@ -17,6 +17,8 @@ import org.hibernate.generator.EventType
 import java.time.OffsetDateTime
 import java.util.UUID
 
+enum class CaptchaStatus { NEU, GELÖST, VERBRAUCHT }
+
 @Entity
 @DynamicInsert
 @Table(name = "captcha_sitzung", schema = "public")
@@ -53,11 +55,11 @@ data class CaptchaSitzung(
   @Column(
     name = "user_agent",
     columnDefinition = "text",
-  ) val userAgent: String? =
-    null,
+  ) val userAgent: String? = null,
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "status", nullable = false, length = 16)
-  val status: String = "NEU",
+  val status: CaptchaStatus = CaptchaStatus.NEU,
 
   @Column(name = "verbraucht_am", columnDefinition = "timestamptz")
   val verbrauchtAm: OffsetDateTime? = null,

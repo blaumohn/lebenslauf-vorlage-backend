@@ -5,5 +5,5 @@ data class KontaktAnfrageDto(
   var email: String = "",
   var nachricht: String = "",
   var captchaAntwort: String = "",
-  var captchaToken: String = "",
+  var captchaId: String = "",
 )
